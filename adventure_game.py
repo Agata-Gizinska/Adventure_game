@@ -50,6 +50,13 @@ class Room:
     def _on_exit(self, player):
         pass
 
+    @staticmethod
+    def user_choice(prompt, choices):
+        while True:
+            choice = input(f'{prompt}')
+            if choice in choices:
+                return choice
+
 
 class DarkRoom(Room):
     _player: Player
@@ -69,20 +76,14 @@ class DarkRoom(Room):
         print('"Which one should I choose?" you wonder.')
         self.choice_room(player)
 
-    @staticmethod
-    def choice_room(player):
-        choice = int(input('Go left (1) or right (2)?'))
-        if choice == 1:
+    def choice_room(self, player):
+        choice = self.user_choice('Go left (1) or right (2)?', ['1', '2'])
+        if choice == '1':
             print('You decide to go left.')
             player.exit_current_room_to(next_room=Stairs())
-        elif choice == 2:
+        elif choice == '2':
             print('You decide to go right.')
             player.exit_current_room_to(next_room=MonsterRoom())
-        else:
-            print('You could not choose where to go. It\'s getting harder to '
-                  'breathe...')
-            print('The Darkness consumed you.')
-            player.exit_current_room_to(next_room=None)
 
     def _on_exit(self, player):
         pass
@@ -101,38 +102,28 @@ class Stairs(Room):
         self.first_choice(player)
 
     def first_choice(self, player):
-        first_choice_ = str(input('Use stairs (yes/no)?'))
-        if first_choice_ == 'yes':
+        choice = self.user_choice('Use stairs (yes/no)?', ['yes', 'no'])
+        if choice == 'yes':
             print('The stairs suddenly collapse under your weight!')
             player.exit_current_room_to(next_room=None)
-        elif first_choice_ == 'no':
+        elif choice == 'no':
             print('"There must be another way. Maybe I should look around." '
                   'you think.')
             self.second_choice(player)
-        else:
-            print('You could not choose what to do. It\'s getting harder to '
-                  'breathe...')
-            print('The Darkness consumed you.')
-            player.exit_current_room_to(next_room=None)
 
-    @staticmethod
-    def second_choice(player):
+    def second_choice(self, player):
         print('You may try to jump over the cracks. On the other hand, you '
               'notice a line hanging down next to the stairs. It looks quite '
               'old and worn.')
-        second_choice_ = int(input('Try to jump (1) or use the rope (2)?'))
-        if second_choice_ == 1:
+        choice = self.user_choice('Try to jump (1) or use the rope (2)?',
+                                  ['1', '2'])
+        if choice == '1':
             print('That was a bad decision. You fell into abyss.')
             player.exit_current_room_to(next_room=None)
-        elif second_choice_ == 2:
+        elif choice == '2':
             print('You reach the bottom and find a door. You enter the next '
                   'room.')
             player.exit_current_room_to(next_room=Prison())
-        else:
-            print('You could not choose what to do. It\'s getting harder to '
-                  'breathe...')
-            print('The Darkness consumed you.')
-            player.exit_current_room_to(next_room=None)
 
     def _on_exit(self, player):
         pass
@@ -152,27 +143,20 @@ class MonsterRoom(Room):
               ' in your head.')
         self.choice_monster(player)
 
-    @staticmethod
-    def choice_monster(player):
-        choice_monster_ = str(input('Attack monster (yes/no)?'))
-        if choice_monster_ == 'yes':
+    def choice_monster(self, player):
+        choice = self.user_choice('Attack monster (yes/no)?', ['yes', 'no'])
+        if choice == 'yes':
             print('You take a chance and attack the monster, inflicting a '
                   'wound. The monster wakes up momentarily and quickly '
                   'throwing off the surprise it charges towards you. It moves'
                   ' so fast that you have no time to guard.')
             print('The monster ripped out your heart.')
             player.exit_current_room_to(next_room=None)
-        elif choice_monster_ == 'no':
+        elif choice == 'no':
             print('"Nah, it\'s not worth it." you think. You quietly advance '
                   'through the room. The monster seems to be still asleep as '
                   'you reach the next door.')
             player.exit_current_room_to(next_room=Prison())
-        else:
-            print('You wondered so long that the monster wakes up. As soon as'
-                  ' it notices you, it charges towards you. It moves so fast '
-                  'that you have no time to guard.')
-            print('The monster ripped out your heart.')
-            player.exit_current_room_to(next_room=None)
 
     def _on_exit(self, player):
         pass
@@ -201,8 +185,9 @@ class Prison(Room):
               'here! I\'m innocent! Look, the key to the cell is right there" '
               'he points behind you back. The key is indeed hanging on a spike'
               ' on the wall.')
-        event_prisoner_ = str(input('Should you free the prisoner (yes/no)?'))
-        if event_prisoner_ == 'yes':
+        choice = self.user_choice('Should you free the prisoner (yes/no)?',
+                                  ['yes', 'no'])
+        if choice == 'yes':
             print('"Nobody should stay here." you think while taking the key '
                   'to the cell. You open the door. The prisoner looks '
                   'surprised and thankful.')
@@ -214,25 +199,20 @@ class Prison(Room):
                   'pocket.')
             player.has_bottle = True
             self.event_guard(player)
-        elif event_prisoner_ == 'no':
+        elif choice == 'no':
             print('"Why should I free this man? He probably bluffs about his '
                   'innocence. What if he\'s a dangerous inmate who will take '
                   'advantage of my kindness? I can\'t waste time here. My '
                   'friend needs my help!" you think and quickly go further ')
             self.event_guard(player)
-        else:
-            print('You could not decide what to do. It\'s getting harder to '
-                  'breathe...')
-            print('The Darkness consumed you.')
-            player.exit_current_room_to(next_room=None)
 
-    @staticmethod
-    def event_guard(player):
+    def event_guard(self, player):
         print('You continue your journey through the prison. Suddenly, you '
               'run into a guard.')
         print('"Who are you?! Surrender!" he shouts.')
-        fight_run = int(input('Should you fight (1) or try to escape (2)?'))
-        if fight_run == 1:
+        fight_run = self.user_choice('Should you fight (1) or try to escape '
+                                     '(2)?', ['1', '2'])
+        if fight_run == '1':
             print('You notice a metal pipe lying nearby. You take a chance in'
                   ' a fight with the guard!')
             print('The guard does not seem to be very bright. You manage to '
@@ -240,7 +220,8 @@ class Prison(Room):
             print('As soon as he is disarmed, the guard shouts: "Have mercy! '
                   'I have a wife and a child to feed. I don\'t want to be '
                   'here either!"')
-            spare = str(input('Should you spare the guard (yes/no)?'))
+            spare = self.user_choice('Should you spare the guard (yes/no)?',
+                                     ['yes', 'no'])
             if spare == 'yes':
                 print('You decide to spare the guard. He looks shocked. He '
                       'stands up slowly.')
@@ -265,25 +246,13 @@ class Prison(Room):
                       ' to search the guard. You move quickly further into '
                       'the labyrinth.')
                 player.exit_current_room_to(next_room=Basement())
-            else:
-                print('You wonder for so long, that the guard takes a chance '
-                      'to get his sword. He wails and quickly spikes you with '
-                      'the sword.')
-                print('You bleed out.')
-                player.exit_current_room_to(next_room=None)
-        elif fight_run == 2:
+        elif fight_run == '2':
             print('You try to escape the guard. He shouts after you and begins'
                   ' to pursue. He\'s quick, you can feel that he\'s right '
                   'behind you. The next turn you take you meet a dead end. You'
                   ' gasp in desperation, but the next moment you feel a sword '
                   'spiking you through your guts.')
             print('You bleed out.')
-            player.exit_current_room_to(next_room=None)
-        else:
-            print('You wondered so long that the guard takes you down. You are'
-                  ' thrown into a cell. As soon as he leaves, you feel that '
-                  'it\'s getting harder to breathe...')
-            print('The Darkness consumed you.')
             player.exit_current_room_to(next_room=None)
 
     def _on_exit(self, player):
@@ -308,9 +277,9 @@ class Basement(Room):
         self.rescue_friend(player)
 
     def rescue_friend(self, player):
-        approach = int(input('Should you get closer quickly (1) or slowly '
-                             '(2)?'))
-        if approach == 1:
+        approach = self.user_choice('Should you get closer quickly (1) or '
+                                    'slowly (2)?', ['1', '2'])
+        if approach == '1':
             print('You rush towards the cell. Unfortunately, you haven\'t '
                   'noticed that a tile on your way looks a little different '
                   'than others. You pressed some mechanism. Suddenly, you hear'
@@ -398,7 +367,7 @@ class Basement(Room):
                     print('The Darkness consumed you. Behold eternal pain...')
                     self._happy_end = False
                     self._on_exit(player)
-        elif approach == 2:
+        elif approach == '2':
             print('You approach cautiously. Looking around you notice that one'
                   ' of tiles looks different. You skip the slab. You '
                   'cautiously approach Ann\'s cell.')
@@ -445,11 +414,6 @@ class Basement(Room):
                 print('The Darkness consumed you. Behold eternal pain...')
                 self._happy_end = False
                 self._on_exit(player)
-        else:
-            print('You spend too much time on wondering. Suddenly, it\'s '
-                  'getting harder to breathe...')
-            print('The Darkness consumed you.')
-            player.exit_current_room_to(next_room=None)
 
     def _on_exit(self, player):
         if self._happy_end:
